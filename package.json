@@ -1,0 +1,23 @@
+{
+  "name": "pog-locator",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ค้นตำแหน่งสินค้าในร้านด้วยบาร์โค้ด (จุดวาง/ชั้น/ตำแหน่งบนชั้น) — DB บน Google Drive",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "typescript": "5.5.4"
+  }
+}
