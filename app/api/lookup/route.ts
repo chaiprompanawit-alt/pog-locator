@@ -14,7 +14,8 @@ function indexUrl(): string {
   if (explicit) return explicit;
   const id = process.env.DRIVE_INDEX_FILE_ID;
   if (!id) throw new Error("ยังไม่ได้ตั้ง env DRIVE_INDEX_FILE_ID หรือ DRIVE_INDEX_URL");
-  return `https://drive.google.com/uc?export=download&id=${id}`;
+  // ใช้ host usercontent (เช็กแล้วส่งไฟล์ตรง) — drive.google.com/uc บาง network ถูก reset
+  return `https://drive.usercontent.google.com/download?id=${id}&export=download`;
 }
 
 async function getIndex(): Promise<PogIndex> {
