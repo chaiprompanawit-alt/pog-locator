@@ -13,6 +13,8 @@ type ApiResp = {
   error?: string;
 };
 
+type Mode = "barcode" | "item";
+
 function fmtDate(iso: string): string {
   try {
     return new Date(iso).toLocaleString("th-TH", {
@@ -25,6 +27,7 @@ function fmtDate(iso: string): string {
 }
 
 export default function Home() {
+  const [mode, setMode] = useState<Mode>("barcode");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resp, setResp] = useState<ApiResp | null>(null);
@@ -55,72 +58,103 @@ export default function Home() {
     inputRef.current?.blur();
   }
 
+  const hasInput = !!code.replace(/\D+/g, "");
+
   return (
-    <main className="wrap">
-      <div className="head">
-        <h1>ค้นตำแหน่งสินค้า</h1>
-        <p>ใส่บาร์โค้ด (13 หลัก) หรือรหัสสินค้า (9 หลัก)</p>
+    <main className="page">
+      <header className="topbar">
+        <div className="brand">POG</div>
+        <div className="subtitle">ค้นตำแหน่งสินค้า</div>
+      </header>
+
+      <div className="card">
+        <div className="card-head">ค้นหาสินค้า</div>
+
+        <div className="seg" role="tablist">
+          <button
+            type="button"
+            className={mode === "barcode" ? "seg-btn on" : "seg-btn"}
+            aria-selected={mode === "barcode"}
+            onClick={() => setMode("barcode")}
+          >
+            บาร์โค้ด (13)
+          </button>
+          <button
+            type="button"
+            className={mode === "item" ? "seg-btn on" : "seg-btn"}
+            aria-selected={mode === "item"}
+            onClick={() => setMode("item")}
+          >
+            รหัสสินค้า (9)
+          </button>
+        </div>
+
+        <form onSubmit={onSubmit}>
+          <div className="label-row">
+            <label htmlFor="code">{mode === "barcode" ? "เลขบาร์โค้ด" : "รหัสสินค้า"}</label>
+            <span className="hint-right">{mode === "barcode" ? "ตัวเลข 13 หลัก" : "ตัวเลข 9 หลัก"}</span>
+          </div>
+          <input
+            id="code"
+            ref={inputRef}
+            className="field"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            autoFocus
+            enterKeyHint="search"
+            placeholder={mode === "barcode" ? "เช่น 8850..." : "เช่น 071073248"}
+            aria-label="เลขบาร์โค้ดหรือรหัสสินค้า"
+          />
+          <p className="tiny">พิมพ์หรือสแกน (เครื่องสแกนต่อคีย์บอร์ดก็ค้นให้อัตโนมัติ)</p>
+          <button className="btn" type="submit" disabled={loading || !hasInput}>
+            {loading ? "กำลังค้นหา…" : "ค้นหาตำแหน่ง"}
+          </button>
+        </form>
       </div>
 
-      <form className="searchbar" onSubmit={onSubmit}>
-        <input
-          ref={inputRef}
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          inputMode="numeric"
-          pattern="[0-9]*"
-          autoFocus
-          enterKeyHint="search"
-          placeholder="พิมพ์/สแกนเลข…"
-          aria-label="เลขบาร์โค้ดหรือรหัสสินค้า"
-        />
-        <button type="submit" disabled={loading || !code.replace(/\D+/g, "")}>
-          {loading ? "…" : "ค้นหา"}
-        </button>
-      </form>
-      <p className="hint">เครื่องสแกนแบบต่อคีย์บอร์ดก็ใช้ได้ (สแกนแล้วค้นให้อัตโนมัติ)</p>
-
-      {err && <div className="status err">⚠️ {err}</div>}
+      {err && <div className="msg err">⚠️ {err}</div>}
 
       {resp && !err && (
-        <>
-          {resp.found ? (
-            <div className="results">
-              {resp.locations.map((loc, i) => (
-                <div className="card" key={`${loc.mod}-${loc.shelf}-${loc.pos}-${i}`}>
-                  <div className="mod">
-                    <small>จุดวาง</small>
-                    {loc.mod}
-                  </div>
-                  <div className="grid">
-                    <div className="cell">
-                      <div className="k">ชั้นที่</div>
-                      <div className="v">{loc.shelf}</div>
-                    </div>
-                    <div className="cell">
-                      <div className="k">ตำแหน่งบนชั้น</div>
-                      <div className="v">{loc.pos}</div>
-                    </div>
-                  </div>
-                  {!loc.is_bay && <span className="tag secondary">POG ไม่มีเลข bay</span>}
+        resp.found ? (
+          <div className="results">
+            {resp.locations.map((loc, i) => (
+              <div className="loc" key={`${loc.mod}-${loc.shelf}-${loc.pos}-${i}`}>
+                <div className="loc-mod">
+                  <span>จุดวาง</span>
+                  <b>{loc.mod}</b>
                 </div>
-              ))}
-              {resp.locations.length > 1 && (
-                <p className="hint">พบ {resp.locations.length} ตำแหน่ง</p>
-              )}
+                <div className="loc-grid">
+                  <div className="loc-cell">
+                    <span>ชั้นที่</span>
+                    <b className="num">{loc.shelf}</b>
+                  </div>
+                  <div className="loc-cell">
+                    <span>ตำแหน่งบนชั้น</span>
+                    <b className="num">{loc.pos}</b>
+                  </div>
+                </div>
+                {!loc.is_bay && <div className="badge">POG ไม่มีเลข bay</div>}
+              </div>
+            ))}
+            {resp.locations.length > 1 && (
+              <p className="tiny center">พบ {resp.locations.length} ตำแหน่ง</p>
+            )}
+            <div className="foot">
+              สาขา {resp.store || "—"} · ข้อมูล ณ {fmtDate(resp.updated_at)}
             </div>
-          ) : (
-            <div className="notfound">
-              <div className="big">🔍</div>
-              <div className="q">{resp.query}</div>
-              <p>ไม่พบสินค้านี้ในผัง</p>
-            </div>
-          )}
-
-          <div className="foot">
-            สาขา {resp.store || "—"} · ข้อมูล ณ {fmtDate(resp.updated_at)}
           </div>
-        </>
+        ) : (
+          <div className="card notfound">
+            <div className="nf-emoji">🔍</div>
+            <div className="nf-q">{resp.query}</div>
+            <div className="nf-text">ไม่พบสินค้านี้ในผัง</div>
+            <div className="foot">
+              สาขา {resp.store || "—"} · ข้อมูล ณ {fmtDate(resp.updated_at)}
+            </div>
+          </div>
+        )
       )}
     </main>
   );
