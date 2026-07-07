@@ -148,6 +148,41 @@ body {
 .btn:active { transform: translate(3px, 3px); box-shadow: none; background: var(--mint-press); }
 .btn:disabled { opacity: 0.55; box-shadow: none; cursor: default; }
 
+.btn.ghost { background: var(--white); }
+.btn.ghost:active { background: #eee; }
+.scan-open {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  margin-top: 12px;
+}
+.scan-open svg { width: 22px; height: 22px; }
+
+/* ── overlay กล้อง ── */
+.scan-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(15, 12, 18, 0.92);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; padding: 20px;
+}
+.scan-box {
+  position: relative;
+  width: 100%; max-width: 380px; aspect-ratio: 3 / 4;
+  border: var(--bd); border-radius: 16px; overflow: hidden;
+  background: #000; box-shadow: var(--hard);
+}
+.scan-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scan-frame {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 74%; height: 34%;
+  border: 3px solid var(--mint);
+  border-radius: 12px;
+  box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.28);
+}
+.scan-status {
+  color: var(--white); font-weight: 500; font-size: 15px; text-align: center;
+  max-width: 340px;
+}
+.scan-close { max-width: 380px; }
+
 /* ── ข้อความสถานะ ── */
 .msg {
   background: var(--white);

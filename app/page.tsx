@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Loc } from "@/lib/lookup";
+import Scanner from "./scanner";
 
 type ApiResp = {
   query: string;
@@ -32,6 +33,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [resp, setResp] = useState<ApiResp | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function search(q: string) {
@@ -117,7 +119,26 @@ export default function Home() {
             {loading ? "กำลังค้นหา…" : "ค้นหาตำแหน่ง"}
           </button>
         </form>
+
+        <button type="button" className="btn ghost scan-open" onClick={() => setScanning(true)}>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+          </svg>
+          สแกนด้วยกล้อง
+        </button>
       </div>
+
+      {scanning && (
+        <Scanner
+          onDetected={(raw) => {
+            setScanning(false);
+            setMode("barcode");
+            setCode(raw);
+            search(raw);
+          }}
+          onClose={() => setScanning(false)}
+        />
+      )}
 
       {err && <div className="msg err">⚠️ {err}</div>}
 
