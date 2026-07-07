@@ -115,9 +115,9 @@ body {
   border: var(--bd);
   border-radius: 10px;
   background: var(--white);
-  padding: 15px 16px;
+  padding: 15px 14px;
   font-family: "Press Start 2P", monospace;
-  font-size: 18px;
+  font-size: 15px;   /* พอดี 13 หลักไม่ล้น (ฟอนต์พิกเซลกว้าง) */
   color: var(--ink);
   outline: none;
 }
