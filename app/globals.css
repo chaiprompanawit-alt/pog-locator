@@ -244,6 +244,22 @@ body {
 
 .foot { text-align: center; color: #7a8590; font-size: 12px; margin-top: 14px; }
 
+/* ── หน้าด่านยืนยันสิทธิ์ (/g/<slug>) ── */
+.gate-desc { margin-top: 10px; margin-bottom: 2px; }
+.gate-label { margin-top: 18px; }
+
+.gate-code {
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 14px;
+  text-indent: 14px;    /* letter-spacing เติมช่องว่างท้ายตัวสุดท้าย → ดันกลับให้ดูตรงกลาง */
+  padding: 18px 14px;
+}
+/* placeholder ใช้ Mitr (Press Start 2P ไม่มี glyph • → กลายเป็นสี่เหลี่ยมโหว่) */
+.gate-code::placeholder { font-size: 24px; letter-spacing: 10px; }
+
+.gate-err { margin: 16px 0 0; }
+
 /* ── แผนผัง ชี้เป้า ── */
 .fp { margin-top: 14px; }
 .fp-note {

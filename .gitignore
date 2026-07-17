@@ -2,6 +2,8 @@
 /node_modules
 /.pnp
 .pnp.*
+# lock ไม่ commit — Vercel resolve เองตอน build เหมือนที่ผ่านมา
+package-lock.json
 
 # next
 /.next/
