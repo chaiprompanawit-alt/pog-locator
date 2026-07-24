@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
   }
   try {
     const index = await getIndex();
-    const { key, locations } = findLocations(index, query);
+    const { key, locations, parse } = findLocations(index, query);
     return NextResponse.json({
       query,
       key,
@@ -57,6 +57,8 @@ export async function GET(req: NextRequest) {
       store: index.store,
       updated_at: index.updated_at,
       locations,
+      // อ่านจากป้ายราคาที่ชั้น → บอกหน้าเว็บว่าแกะรหัสอะไรออกมาได้บ้าง
+      label: parse.isLabel ? { item: parse.item, barcode: parse.barcode } : null,
     });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "เกิดข้อผิดพลาด";

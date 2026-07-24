@@ -12,6 +12,7 @@ type ApiResp = {
   store: string;
   updated_at: string;
   locations: Loc[];
+  label?: { item: string | null; barcode: string | null } | null;
   error?: string;
 };
 
@@ -38,8 +39,10 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function search(q: string) {
-    const query = q.replace(/\D+/g, "");
-    if (!query) return;
+    // ส่งดิบๆ (แค่ตัดช่องว่างหัวท้าย) — ห้ามล้างตัวคั่นทิ้ง ไม่งั้นบาร์โค้ดป้ายชั้น
+    // ที่เป็น "รหัสสินค้า/บาร์โค้ด/..." จะกลายเป็นเลขยาวก้อนเดียวจนแยกไม่ออก
+    const query = q.trim();
+    if (!/\d/.test(query)) return;
     setLoading(true);
     setErr(null);
     try {
@@ -61,7 +64,7 @@ export default function Home() {
     inputRef.current?.blur();
   }
 
-  const hasInput = !!code.replace(/\D+/g, "");
+  const hasInput = /\d/.test(code);
 
   return (
     <main className="page">
@@ -109,13 +112,14 @@ export default function Home() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             inputMode="numeric"
-            pattern="[0-9]*"
+            /* ไม่ใส่ pattern="[0-9]*" — บาร์โค้ดป้ายชั้นมี "/" ปนมา ถ้าใส่ไว้
+               เครื่องสแกนแบบต่อคีย์บอร์ดจะยิงจบด้วย Enter แล้วโดน browser บล็อกไม่ให้ submit */
             autoFocus
             enterKeyHint="search"
             placeholder={mode === "barcode" ? "เช่น 8850..." : "เช่น 071073248"}
             aria-label="เลขบาร์โค้ดหรือรหัสสินค้า"
           />
-          <p className="tiny">พิมพ์หรือสแกน (เครื่องสแกนต่อคีย์บอร์ดก็ค้นให้อัตโนมัติ)</p>
+          <p className="tiny">พิมพ์หรือสแกน — สแกนบาร์โค้ดบนป้ายราคาที่ชั้นก็ได้ ระบบแยกรหัสสินค้าให้เอง</p>
           <button className="btn" type="submit" disabled={loading || !hasInput}>
             {loading ? "กำลังค้นหา…" : "ค้นหาตำแหน่ง"}
           </button>
@@ -142,6 +146,14 @@ export default function Home() {
       )}
 
       {err && <div className="msg err">⚠️ {err}</div>}
+
+      {resp && !err && resp.label && (
+        <div className="from-label">
+          🏷️ อ่านจากป้ายราคาที่ชั้น
+          {resp.label.item && <> · รหัสสินค้า <b>{resp.label.item}</b></>}
+          {resp.label.barcode && <> · บาร์โค้ด <b>{resp.label.barcode}</b></>}
+        </div>
+      )}
 
       {resp && !err && (
         resp.found ? (

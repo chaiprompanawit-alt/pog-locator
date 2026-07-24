@@ -95,11 +95,13 @@ export default function Scanner({ onDetected, onClose }: Props) {
         try {
           const codes = await detector.detect(video);
           if (codes && codes.length) {
-            const raw = String(codes[0].rawValue || "");
-            const digits = raw.replace(/\D+/g, "");
-            if (digits.length >= 6) {
+            // ส่งค่าดิบ ไม่ล้างตัวคั่นทิ้ง — ป้ายราคาที่ชั้นเข้ารหัส
+            // "รหัสสินค้า/บาร์โค้ด/..." ไว้ด้วยกัน ฝั่ง lookup ต้องเอาไปแยกต่อ
+            const raw = String(codes[0].rawValue || "").trim();
+            const nDigits = (raw.match(/\d/g) ?? []).length;
+            if (nDigits >= 6) {
               stop();
-              onDetectedRef.current(digits);
+              onDetectedRef.current(raw);
               return;
             }
           }
