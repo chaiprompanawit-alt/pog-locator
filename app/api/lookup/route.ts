@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
       label: parse.isLabel ? { item: parse.item, barcode: parse.barcode } : null,
     });
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "เกิดข้อผิดพลาด";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error("lookup error:", e);
+    return NextResponse.json({ error: "ระบบขัดข้อง กรุณาลองใหม่" }, { status: 500 });
   }
 }
