@@ -6,6 +6,7 @@ export type Loc = {
   shelf: number;    // ชั้นที่วาง
   pos: number;      // ตำแหน่งบนชั้น (ซ้าย→ขวา)
   is_bay: boolean;
+  item?: string;    // รหัสสินค้า 9 หลัก — ใช้เปิด shelf_map วาดกรอบบนรูปชั้น (index เก่าอาจไม่มี)
 };
 
 export type PogIndex = {

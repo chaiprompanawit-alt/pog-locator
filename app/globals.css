@@ -323,6 +323,18 @@ body {
   box-sizing: border-box;
   pointer-events: none;
 }
+/* กรอบสินค้าบนรูปชั้น (ShelfView) — ทับตรงตำแหน่งที่ค้นเจอ */
+.fp-box {
+  position: absolute;
+  border: 3px solid var(--danger);
+  border-radius: 3px;
+  background: rgba(229, 72, 77, 0.12);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.28);
+  animation: fp-pulse 1.4s ease-out infinite;
+}
 .fp-pin {
   position: absolute;
   transform: translate(-50%, -50%);

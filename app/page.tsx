@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { Loc } from "@/lib/lookup";
 import Scanner from "./scanner";
 import Floorplan from "./floorplan";
+import ShelfView from "./shelf";
 
 type ApiResp = {
   query: string;
@@ -175,6 +176,7 @@ export default function Home() {
                   </div>
                 </div>
                 {!loc.is_bay && <div className="badge">POG ไม่มีเลข bay</div>}
+                <ShelfView mod={loc.mod} item={loc.item} />
                 <Floorplan mod={loc.mod} />
               </div>
             ))}
