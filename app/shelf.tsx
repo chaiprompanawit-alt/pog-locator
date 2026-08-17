@@ -14,6 +14,9 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 6;
 const ZOOM_ITEM = 2.6; // ซูมเริ่มต้นให้เห็นสินค้าเป้าหมายชัด (ชั้นเต็มสินค้าจะเล็กมาก)
 
+/** URL รูปชั้น — คำนวณจาก mod ได้เลย ไม่ต้องรอ /api/shelf ตอบ (ต้องตรงกับที่ route คืนมา) */
+const imgSrc = (mod: string) => `/api/shelf/img?mod=${encodeURIComponent(mod)}`;
+
 /**
  * ShelfView — รูป "ชั้นวางจริง" ของ Mod พร้อมกรอบแดงทับตำแหน่งสินค้าที่ค้นเจอ
  * ดึงพิกัดจาก /api/shelf (shelf_map) แล้ววาดกรอบของ item ที่ส่งเข้ามา
@@ -28,6 +31,13 @@ export default function ShelfView({ mod, item }: { mod: string; item?: string })
     let alive = true;
     setData(null);
     setErr(null);
+
+    // เริ่มโหลดรูป **ขนานไปกับ** metadata เลย — URL เดารู้อยู่แล้วจาก mod
+    // (ถ้ารอ /api/shelf ตอบก่อนค่อยเริ่ม = ต่อคิวสองรอบ: JSON จาก Drive แล้วค่อย PNG)
+    // ไม่พบรูปก็แค่ 404 ที่ทิ้งไป ราคาถูก ส่วนกรณีพบ = รูปมาถึงเร็วขึ้นหนึ่งรอบเต็ม
+    const pre = new Image();
+    pre.src = imgSrc(mod);
+
     fetch(`/api/shelf?mod=${encodeURIComponent(mod)}`)
       .then((r) => r.json())
       .then((d) => alive && setData(d))
@@ -102,10 +112,12 @@ export default function ShelfView({ mod, item }: { mod: string; item?: string })
         <div className="fp-content" style={{ width: `${zoom * 100}%` }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={data.img}
+            src={imgSrc(mod)}
             alt={`รูปชั้น ${mod}`}
             className="fp-img"
             draggable={false}
+            decoding="async"
+            fetchPriority="high"
             onLoad={recenter}
           />
           {boxes.map(([x, y, w, h], i) => (
