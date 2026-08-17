@@ -16,13 +16,21 @@ export async function GET(req: NextRequest) {
     if (!e || !e.img_file_id) {
       return NextResponse.json({ found: false, mod });
     }
-    return NextResponse.json({
-      found: true,
-      mod,
-      aspect: e.aspect || 1,
-      items: e.items || {},
-      img: `/api/shelf/img?mod=${encodeURIComponent(mod)}`,
-    });
+    return NextResponse.json(
+      {
+        found: true,
+        mod,
+        aspect: e.aspect || 1,
+        items: e.items || {},
+        img: `/api/shelf/img?mod=${encodeURIComponent(mod)}`,
+      },
+      {
+        // พิกัดกรอบเปลี่ยนเฉพาะตอน reprocess — ให้ CDN ของ Vercel ตอบแทนได้เลย
+        headers: {
+          "Cache-Control": "public, max-age=60, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      }
+    );
   } catch (err) {
     console.error("shelf error:", err);
     return NextResponse.json({ error: "โหลดรูปชั้นไม่สำเร็จ" }, { status: 500 });
