@@ -12,7 +12,10 @@ type ShelfData = {
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 6;
-const ZOOM_ITEM = 2.6; // ซูมเริ่มต้นให้เห็นสินค้าเป้าหมายชัด (ชั้นเต็มสินค้าจะเล็กมาก)
+const ZOOM_ITEM = 2.6;    // ปุ่ม 🎯 — ซูมเข้าไปดูสินค้าใกล้ๆ
+// เปิดมาให้เห็นทั้งชั้นก่อน: ซูมเข้าทันทีตั้งแต่แรกทำให้เห็นสินค้าไม่กี่ชิ้น
+// จนไม่รู้ว่ากรอบแดงอยู่ตรงไหนของชั้น — เห็นภาพรวมก่อนแล้วค่อยกด 🎯 ซูมเอง
+const ZOOM_START = ZOOM_MIN;
 
 /** URL รูปชั้น — คำนวณจาก mod ได้เลย ไม่ต้องรอ /api/shelf ตอบ (ต้องตรงกับที่ route คืนมา) */
 const imgSrc = (mod: string) => `/api/shelf/img?mod=${encodeURIComponent(mod)}`;
@@ -24,7 +27,7 @@ const imgSrc = (mod: string) => `/api/shelf/img?mod=${encodeURIComponent(mod)}`;
 export default function ShelfView({ mod, item }: { mod: string; item?: string }) {
   const [data, setData] = useState<ShelfData | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(ZOOM_ITEM);
+  const [zoom, setZoom] = useState(ZOOM_START);
   const vpRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
