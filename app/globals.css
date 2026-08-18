@@ -375,3 +375,20 @@ body {
 .fp-btn.wide { flex: 1; font-size: 14px; }
 .fp-btn:active { transform: translate(3px, 3px); box-shadow: none; }
 .fp-btn:disabled { opacity: 0.4; box-shadow: none; cursor: default; }
+
+/* ── ป๊อปอัปรับทราบคุกกี้ + ขอสิทธิ์กล้อง (ครั้งแรกที่เข้าเว็บ) ── */
+.consent-overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(15, 12, 18, 0.72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.consent-card { width: 100%; max-width: 420px; margin: auto; }
+.consent-list { list-style: none; margin: 16px 0 4px; padding: 0; }
+.consent-list li { display: flex; gap: 12px; margin-bottom: 14px; text-align: left; }
+.consent-list b { display: block; margin-bottom: 2px; }
+.consent-list .tiny { margin: 0; text-align: left; }
+.consent-ico { font-size: 22px; line-height: 1.2; }
+.consent-note { margin: 0 0 12px; }
+.consent-skip { margin-top: 10px; }

@@ -21,7 +21,11 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // Next.js ฝัง inline script/style ตอน hydrate
-              "script-src 'self' 'unsafe-inline'",
+              // dev เท่านั้น: webpack ห่อโมดูลด้วย eval() — ไม่ใส่ 'unsafe-eval' แล้ว
+              // หน้าเว็บจะไม่ hydrate เลยตอน next dev (โปรดักชันไม่ใช้ eval จึงไม่ต้องมี)
+              `script-src 'self' 'unsafe-inline'${
+                process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"
+              }`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob:",
               "connect-src 'self'",

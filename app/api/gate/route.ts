@@ -73,24 +73,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "รูปแบบคำขอไม่ถูกต้อง" }, { status: 400 });
   }
 
+  // ไม่ส่ง slug มา = ปลดล็อกตัวเว็บเฉยๆ (หน้าแรก ครั้งแรกที่ใช้งาน)
+  // ส่ง slug มา = มาจากการสแกน QR ป้ายชั้น ต้องได้ลิงก์ Drive ของป้ายนั้นกลับไปด้วย
   const slug = typeof body.slug === "string" ? body.slug : "";
-  if (!slug) {
-    return NextResponse.json({ error: "ไม่รู้ว่าเป็นป้ายไหน" }, { status: 400 });
-  }
 
   let entry;
   let ok = false;
   try {
-    const map = await getCardsMap();
-    entry = map.mods[slug];
+    if (slug) {
+      const map = await getCardsMap();
+      entry = map.mods[slug];
+      if (!entry) {
+        return NextResponse.json({ error: "ไม่พบป้ายนี้ในระบบ" }, { status: 404 });
+      }
+    }
     // codeMatches เรียก gateCode() ซึ่ง throw ถ้าไม่ได้ตั้ง env → ต้องอยู่ใน try
-    if (entry) ok = codeMatches(body.code);
+    ok = codeMatches(body.code);
   } catch (e: unknown) {
     console.error("gate error:", e);
     return NextResponse.json({ error: "ระบบขัดข้อง กรุณาลองใหม่" }, { status: 500 });
-  }
-  if (!entry) {
-    return NextResponse.json({ error: "ไม่พบป้ายนี้ในระบบ" }, { status: 404 });
   }
 
   if (!ok) {
@@ -100,7 +101,9 @@ export async function POST(req: NextRequest) {
   }
 
   // ผ่านแล้วเท่านั้นถึงส่งลิงก์ Drive กลับไป
-  const res = NextResponse.json({ ok: true, url: driveViewUrl(entry.file_id) });
+  const res = NextResponse.json(
+    entry ? { ok: true, url: driveViewUrl(entry.file_id) } : { ok: true }
+  );
   res.cookies.set(GATE_COOKIE, makeToken(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

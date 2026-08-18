@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { findLocations, type PogIndex } from "@/lib/lookup";
+import { requestPassed } from "@/lib/gate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,6 +44,9 @@ async function getIndex(): Promise<PogIndex> {
 }
 
 export async function GET(req: NextRequest) {
+  if (!requestPassed(req)) {
+    return NextResponse.json({ error: "ยังไม่ได้ใส่รหัส" }, { status: 401 });
+  }
   const query = req.nextUrl.searchParams.get("code")?.trim() ?? "";
   if (!query) {
     return NextResponse.json({ error: "กรุณาใส่เลขสินค้า" }, { status: 400 });

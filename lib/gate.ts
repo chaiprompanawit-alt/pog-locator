@@ -112,3 +112,15 @@ export function verifyToken(token: string | undefined): boolean {
   const ts = Number(exp);
   return Number.isFinite(ts) && ts > Date.now();
 }
+
+/**
+ * ผ่านด่านแล้วหรือยัง (อ่านจากคุกกี้ในคำขอ) — ใช้กับ route handler
+ * ไม่ผ่าน = ไม่ควรตอบข้อมูลผัง ไม่งั้นยิง /api ตรงๆ ก็ข้ามด่านหน้าเว็บได้
+ */
+export function requestPassed(req: { cookies: { get(name: string): { value: string } | undefined } }): boolean {
+  try {
+    return verifyToken(req.cookies.get(GATE_COOKIE)?.value);
+  } catch {
+    return false;
+  }
+}

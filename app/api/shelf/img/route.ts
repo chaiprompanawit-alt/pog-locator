@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { getShelfMap, driveImageUrl } from "@/lib/shelf";
+import { requestPassed } from "@/lib/gate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,9 +17,10 @@ export const dynamic = "force-dynamic";
 // s-maxage สั้นเพื่อให้ CDN เช็กกับ ETag บ่อยๆ ส่วน stale-while-revalidate ยาว = ผู้ใช้ได้ของ
 // จาก CDN ทันทีเสมอ แล้ว CDN ค่อยไปเช็กเบื้องหลัง — รูปใหม่ขึ้นเองภายในไม่กี่นาทีหลัง reprocess
 const CACHE_CONTROL =
-  "public, max-age=300, s-maxage=60, stale-while-revalidate=604800";
+  "private, max-age=300, stale-while-revalidate=604800";
 
 export async function GET(req: NextRequest) {
+  if (!requestPassed(req)) return new Response("locked", { status: 401 });
   const mod = req.nextUrl.searchParams.get("mod")?.trim() ?? "";
   if (!mod) return new Response("missing mod", { status: 400 });
   try {
