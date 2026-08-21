@@ -5,10 +5,14 @@ import { useEffect, useRef, useState } from "react";
 type Props = {
   onDetected: (code: string) => void;
   onClose: () => void;
+  /** "qr" = อ่าน QR ป้ายชั้น (โหมด Gap Scan) — ค่าเริ่มต้นคืออ่านบาร์โค้ดสินค้า */
+  mode?: "barcode" | "qr";
+  /** ข้อความใต้กรอบตอนกล้องพร้อม */
+  hint?: string;
 };
 
 // BarcodeDetector ยังไม่มีใน TS DOM types → ประกาศหลวมๆ ผ่าน any
-export default function Scanner({ onDetected, onClose }: Props) {
+export default function Scanner({ onDetected, onClose, mode = "barcode", hint }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const stopRef = useRef(false);
@@ -17,6 +21,8 @@ export default function Scanner({ onDetected, onClose }: Props) {
 
   const [status, setStatus] = useState("กำลังเปิดกล้องหลัง…");
   const [fatal, setFatal] = useState(false);
+
+  const isQr = mode === "qr";
 
   useEffect(() => {
     stopRef.current = false;
@@ -79,13 +85,15 @@ export default function Scanner({ onDetected, onClose }: Props) {
       } catch {
         /* บาง browser เล่นอัตโนมัติไม่ได้ ไม่เป็นไร */
       }
-      setStatus("เล็งบาร์โค้ดให้อยู่ในกรอบ");
+      setStatus(hint || (isQr ? "เล็ง QR บนป้ายชั้นให้อยู่ในกรอบ" : "เล็งบาร์โค้ดให้อยู่ในกรอบ"));
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let detector: any;
       try {
         detector = new BD({
-          formats: ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"],
+          formats: isQr
+            ? ["qr_code"]
+            : ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"],
         });
       } catch {
         detector = new BD();
@@ -98,8 +106,11 @@ export default function Scanner({ onDetected, onClose }: Props) {
             // ส่งค่าดิบ ไม่ล้างตัวคั่นทิ้ง — ป้ายราคาที่ชั้นเข้ารหัส
             // "รหัสสินค้า/บาร์โค้ด/..." ไว้ด้วยกัน ฝั่ง lookup ต้องเอาไปแยกต่อ
             const raw = String(codes[0].rawValue || "").trim();
-            const nDigits = (raw.match(/\d/g) ?? []).length;
-            if (nDigits >= 6) {
+            // QR ป้ายชั้นเป็น URL ไม่ใช่ตัวเลข — เกณฑ์ "มีเลข 6 ตัว" ใช้ไม่ได้
+            const ok = isQr
+              ? raw.length > 0
+              : (raw.match(/\d/g) ?? []).length >= 6;
+            if (ok) {
               stop();
               onDetectedRef.current(raw);
               return;
@@ -114,7 +125,8 @@ export default function Scanner({ onDetected, onClose }: Props) {
 
     start();
     return () => stop();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQr]);
 
   return (
     <div className="scan-overlay" role="dialog" aria-modal="true">

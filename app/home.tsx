@@ -132,6 +132,14 @@ export default function Home() {
           </svg>
           สแกนด้วยกล้อง
         </button>
+
+        {/* แตกกิ่งไปอีกโหมด: สแกน QR ป้ายชั้น แล้วเลือกสินค้าที่ขาดทั้งชั้นรวดเดียว */}
+        <a href="/gap" className="btn ghost scan-open mode-branch">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm8 6v-8h2v2h2v-2h2v2h-2v2h2v4h-2v-2h-2v2h-2zm4-2v-2h-2v2h2z" />
+          </svg>
+          Gap Scan — เช็คของขาดทั้งชั้น
+        </a>
       </div>
 
       {scanning && (

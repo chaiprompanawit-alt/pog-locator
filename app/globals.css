@@ -392,3 +392,84 @@ body {
 .consent-ico { font-size: 22px; line-height: 1.2; }
 .consent-note { margin: 0 0 12px; }
 .consent-skip { margin-top: 10px; }
+
+/* ── Gap Scan — เลือกสินค้าที่ขาดบนรูปชั้น ── */
+.msg.ok { color: #1a7f4b; }
+
+/* กรอบสินค้าที่กดได้: เขียว = ปกติ, แดง = ขาด (ต้องกดได้ ต่างจาก .fp-box ที่ปิด pointer) */
+.gap-box {
+  position: absolute;
+  padding: 0;
+  border: 3px solid #1a7f4b;
+  border-radius: 3px;
+  background: rgba(26, 127, 75, 0.14);
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.08s, border-color 0.08s;
+}
+.gap-box.on {
+  border-color: var(--danger);
+  background: rgba(229, 72, 77, 0.34);
+  box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.3);
+}
+
+.gap-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.gap-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: var(--bd);
+  border-radius: 10px;
+  background: var(--white);
+  padding: 8px 10px;
+  font-family: "Mitr", sans-serif;
+  color: var(--ink);
+  cursor: pointer;
+}
+.gap-row.on { background: rgba(229, 72, 77, 0.16); }
+.gap-tick { font-size: 18px; color: var(--danger); }
+.gap-codes { flex: 1; min-width: 0; }
+.gap-codes b.num { display: block; font-family: "Press Start 2P", monospace; font-size: 13px; }
+.gap-codes .tiny { margin: 2px 0 0; text-align: left; }
+.gap-where { font-size: 13px; color: #555; white-space: nowrap; }
+
+/* แถบสรุปติดขอบล่าง — เดินเช็คทั้งชั้นแล้วกดสรุปได้โดยไม่ต้องเลื่อนกลับขึ้นบน */
+.gap-bar {
+  position: sticky;
+  bottom: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px;
+  border: var(--bd);
+  border-radius: 14px;
+  background: var(--cream);
+  box-shadow: var(--hard);
+}
+.gap-count { font-size: 14px; white-space: nowrap; }
+.gap-count b.num { font-family: "Press Start 2P", monospace; font-size: 16px; }
+.gap-sum { flex: 1; margin-top: 0; }
+
+.gap-out { margin-top: 14px; }
+.gap-text {
+  font-family: "Mitr", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+}
+.gap-link { color: inherit; }
+.mode-branch { text-decoration: none; }
