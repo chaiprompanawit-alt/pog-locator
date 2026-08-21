@@ -10,6 +10,9 @@ export type ShelfEntry = {
   img_rev?: string;                    // แฮชของไฟล์รูปรอบล่าสุด (map เก่าอาจไม่มี) — ใช้ทำ ETag
   img_mime?: string;                   // "image/webp" ของใหม่ / map เก่าไม่มีฟิลด์ = PNG
   items: Record<string, number[][]>;   // รหัสสินค้า 9 → [[x,y,w,h] 0..1] (มีได้หลายกรอบ)
+  // กรอบที่ "เดาตำแหน่ง" ให้สินค้าที่ผังไม่ได้พิมพ์รหัสกำกับไว้บนหน้ารูป — แยกจาก items
+  // เสมอ เพราะความแม่นต่างกัน (map รุ่นก่อนหน้าไม่มีฟิลด์นี้)
+  items_approx?: Record<string, number[][]>;
 };
 
 export type ShelfMap = {

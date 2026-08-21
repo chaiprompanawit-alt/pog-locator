@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
   try {
     const index = await getIndex();
     const { key, locations, parse } = findLocations(index, query);
+    // ชื่อสินค้าเก็บแยกเป็น item9 → ชื่อ ใน index (ดู location_index.build_public)
+    const name = index.names?.[locations[0]?.item ?? ""] ?? "";
     return NextResponse.json({
       query,
       key,
@@ -24,6 +26,7 @@ export async function GET(req: NextRequest) {
       store: index.store,
       updated_at: index.updated_at,
       locations,
+      name,
       // อ่านจากป้ายราคาที่ชั้น → บอกหน้าเว็บว่าแกะรหัสอะไรออกมาได้บ้าง
       label: parse.isLabel ? { item: parse.item, barcode: parse.barcode } : null,
     });

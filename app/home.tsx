@@ -13,6 +13,7 @@ type ApiResp = {
   store: string;
   updated_at: string;
   locations: Loc[];
+  name?: string;
   label?: { item: string | null; barcode: string | null } | null;
   error?: string;
 };
@@ -167,6 +168,7 @@ export default function Home() {
       {resp && !err && (
         resp.found ? (
           <div className="results">
+            {resp.name && <div className="found-name">{resp.name}</div>}
             {resp.locations.map((loc, i) => (
               <div className="loc" key={`${loc.mod}-${loc.shelf}-${loc.pos}-${i}`}>
                 <div className="loc-mod">

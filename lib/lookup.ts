@@ -14,6 +14,8 @@ export type PogIndex = {
   store: string;
   count: number;
   items: Record<string, Loc[]>;
+  // ชื่อสินค้า item9 → ชื่อ (index รุ่นก่อนหน้าไม่มีฟิลด์นี้ — ฝั่งเว็บต้องเผื่อ undefined)
+  names?: Record<string, string>;
 };
 
 const digits = (s: string) => (s || "").replace(/\D+/g, "");

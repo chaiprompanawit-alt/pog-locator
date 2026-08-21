@@ -473,3 +473,16 @@ body {
 }
 .gap-link { color: inherit; }
 .mode-branch { text-decoration: none; }
+.gap-box.approx { border-style: dashed; }
+.gap-name { display: block; font-size: 13px; line-height: 1.35; margin-bottom: 2px; }
+
+/* ชื่อสินค้าที่ค้นเจอ — โชว์เหนือรายการตำแหน่ง */
+.found-name {
+  background: var(--cream);
+  border: var(--bd);
+  border-radius: 12px;
+  box-shadow: var(--hard-sm);
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 500;
+}

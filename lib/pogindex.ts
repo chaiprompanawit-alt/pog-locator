@@ -45,6 +45,7 @@ export async function getIndex(): Promise<PogIndex> {
 export type ModRow = {
   item: string;             // รหัสสินค้า 9 หลัก
   barcode: string | null;   // บาร์โค้ด 13 หลัก (index บางแถวอาจไม่มีคู่)
+  name: string;             // ชื่อสินค้า ("" ถ้า index รุ่นเก่าที่ยังไม่มีชื่อ)
   shelf: number;
   pos: number;
 };
@@ -82,7 +83,7 @@ export function indexByMod(index: PogIndex): Map<string, ModRow[]> {
       if (set.has(item)) continue;
       set.add(item);
       const rows = byMod.get(loc.mod) || [];
-      rows.push({ item, barcode: null, shelf: loc.shelf, pos: loc.pos });
+      rows.push({ item, barcode: null, name: index.names?.[item] ?? "", shelf: loc.shelf, pos: loc.pos });
       byMod.set(loc.mod, rows);
     }
   }

@@ -40,13 +40,19 @@ export async function GET(req: NextRequest) {
     const rows = indexByMod(index).get(mod) ?? [];
     const shelf = shelfMap.mods?.[mod];
 
-    const items = rows.map((r) => ({
-      item: r.item,
-      barcode: r.barcode,
-      shelf: r.shelf,
-      pos: r.pos,
-      boxes: shelf?.items?.[r.item] ?? [],
-    }));
+    const items = rows.map((r) => {
+      const boxes = shelf?.items?.[r.item] ?? [];
+      const approx = boxes.length ? [] : (shelf?.items_approx?.[r.item] ?? []);
+      return {
+        item: r.item,
+        barcode: r.barcode,
+        name: r.name,
+        shelf: r.shelf,
+        pos: r.pos,
+        boxes: boxes.length ? boxes : approx,
+        approx: boxes.length === 0 && approx.length > 0,
+      };
+    });
 
     return NextResponse.json({
       found: items.length > 0,

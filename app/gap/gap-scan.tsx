@@ -6,9 +6,11 @@ import Scanner from "../scanner";
 type GapItem = {
   item: string;
   barcode: string | null;
+  name: string;
   shelf: number;
   pos: number;
   boxes: number[][];
+  approx: boolean;    // กรอบนี้ "เดาตำแหน่ง" มา (ผังไม่ได้พิมพ์รหัสกำกับไว้บนรูป)
 };
 
 type GapResp = {
@@ -122,7 +124,7 @@ export default function GapScan() {
     const when = new Date().toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" });
     const head = `GAP ${data.mod} · ${when} · ${pickedList.length} รายการ`;
     const lines = pickedList.map(
-      (it) => `${it.item}\t${it.barcode ?? "-"}\tช.${it.shelf}/ต.${it.pos}`
+      (it) => `${it.item}\t${it.barcode ?? "-"}\t${it.name || "-"}\tช.${it.shelf}/ต.${it.pos}`
     );
     return [head, ...lines].join("\n");
   }, [data, pickedList]);
@@ -263,6 +265,9 @@ export default function GapScan() {
             <div className="fp">
               <div className="fp-cap">
                 แตะที่สินค้าที่ <b>ขาด</b> — กรอบเขียวจะเปลี่ยนเป็นแดง
+                {items.some((it) => it.approx) && (
+                  <div className="tiny">กรอบเส้นประ = ตำแหน่งโดยประมาณ (ผังไม่ได้พิมพ์รหัสกำกับไว้)</div>
+                )}
               </div>
 
               {data.has_img ? (
@@ -282,7 +287,10 @@ export default function GapScan() {
                           <button
                             type="button"
                             key={`${it.item}-${i}`}
-                            className={picked.has(it.item) ? "gap-box on" : "gap-box"}
+                            className={
+                              (picked.has(it.item) ? "gap-box on" : "gap-box") +
+                              (it.approx ? " approx" : "")
+                            }
                             style={{
                               left: `${x * 100}%`,
                               top: `${y * 100}%`,
@@ -292,7 +300,7 @@ export default function GapScan() {
                             onClick={() => toggle(it.item)}
                             aria-pressed={picked.has(it.item)}
                             aria-label={`${it.item} ชั้น ${it.shelf} ตำแหน่ง ${it.pos}`}
-                            title={`${it.item}${it.barcode ? ` · ${it.barcode}` : ""}`}
+                            title={`${it.item}${it.name ? ` · ${it.name}` : ""}${it.approx ? " (ตำแหน่งโดยประมาณ)" : ""}`}
                           />
                         ))
                       )}
@@ -340,8 +348,13 @@ export default function GapScan() {
                 >
                   <span className="gap-tick">{picked.has(it.item) ? "●" : "○"}</span>
                   <span className="gap-codes">
+                    {it.name && <span className="gap-name">{it.name}</span>}
                     <b className="num">{it.item}</b>
-                    <span className="tiny">{it.barcode ?? "ไม่มีบาร์โค้ด"}</span>
+                    <span className="tiny">
+                      {it.barcode ?? "ไม่มีบาร์โค้ด"}
+                      {it.approx && " · กรอบโดยประมาณ"}
+                      {it.boxes.length === 0 && " · ไม่มีกรอบบนรูป"}
+                    </span>
                   </span>
                   <span className="gap-where">ช.{it.shelf}/ต.{it.pos}</span>
                 </button>
